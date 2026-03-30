@@ -10,10 +10,10 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
-import { StylelintStack } from '@premierstacks/stylelint-stack';
+import { Stylelint } from '@tomaschochola/tooling-stylelint';
 
 // eslint-disable-next-line no-restricted-exports
-export default new StylelintStack()
+export default new Stylelint()
   .standard()
   .prettier()
   .build();

@@ -10,7 +10,7 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
-export class StylelintStack {
+export class Stylelint {
   config;
 
   constructor() {
