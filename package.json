@@ -6,7 +6,7 @@
   },
   "bugs": {
     "email": "tomaschochola@tomaschochola.cz",
-    "url": "https://github.com/tomaschochola/tooling-TODO/issues"
+    "url": "https://github.com/tomaschochola/tooling-stylelint/issues"
   },
   "contributors": [
     {
@@ -15,8 +15,12 @@
       "url": "https://github.com/tomaschochola"
     }
   ],
-  "dependencies": {},
-  "description": "@tomaschochola/tooling-TODO",
+  "dependencies": {
+    "stylelint": "^17.6.0",
+    "stylelint-config-standard-scss": "^17.0.0",
+    "stylelint-prettier": "^5.0.3"
+  },
+  "description": "@tomaschochola/tooling-stylelint",
   "devDependencies": {
     "@tomaschochola/eslint-stack": "github:tomaschochola/eslint-stack#1.x",
     "@tomaschochola/prettier-stack": "github:tomaschochola/prettier-stack#1.x"
@@ -25,18 +29,18 @@
     "type": "github",
     "url": "https://github.com/sponsors/tomaschochola"
   },
-  "homepage": "https://github.com/tomaschochola/tooling-TODO",
+  "homepage": "https://github.com/tomaschochola/tooling-stylelint",
   "keywords": [
     "tomaschochola",
     "TomasChochola",
     "Tomas Chochola",
     "Tomáš Chochola",
-    "tooling-TODO"
+    "tooling-stylelint"
   ],
   "license": "CC-BY-ND-4.0",
   "main": "./src/index.js",
-  "name": "@tomaschochola/tooling-TODO",
-  "repository": "github:tomaschochola/tooling-TODO",
+  "name": "@tomaschochola/tooling-stylelint",
+  "repository": "github:tomaschochola/tooling-stylelint",
   "sideEffects": false,
   "type": "module"
 }
