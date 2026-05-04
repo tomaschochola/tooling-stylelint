@@ -24,14 +24,14 @@ export class Stylelint {
     return process.env.NODE_ENV;
   }
 
-  replace(config) {
+  replaceConfig(config) {
     this.config = { ...config };
 
     return this;
   }
 
-  standard(options = {}) {
-    return this.replace({
+  configStandardScss(options = {}) {
+    return this.replaceConfig({
       ...this.config,
       extends: [
         ...this.config.extends,
@@ -41,13 +41,20 @@ export class Stylelint {
     });
   }
 
-  prettier(options = {}) {
-    return this.replace({
+  configPrettierRecommended(options = {}) {
+    return this.replaceConfig({
       ...this.config,
       extends: [
         ...this.config.extends,
         'stylelint-prettier/recommended',
       ],
+      ...options,
+    });
+  }
+
+  configPrettierDisabledRule(options = {}) {
+    return this.replaceConfig({
+      ...this.config,
       rules: {
         ...this.config.rules,
         'prettier/prettier': null,
@@ -56,7 +63,31 @@ export class Stylelint {
     });
   }
 
-  build() {
+  presetDefaults(options = {}) {
+    const {
+      configStandardScss = true,
+      configPrettierRecommended = true,
+      configPrettierDisabledRule = true,
+    } = options;
+
+    let stylelint = this;
+
+    if (configStandardScss) {
+      stylelint = stylelint.configStandardScss();
+    }
+
+    if (configPrettierRecommended) {
+      stylelint = stylelint.configPrettierRecommended();
+    }
+
+    if (configPrettierDisabledRule) {
+      stylelint = stylelint.configPrettierDisabledRule();
+    }
+
+    return stylelint;
+  }
+
+  buildConfig() {
     return { ...this.config };
   }
 }
