@@ -10,84 +10,49 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
-export class Stylelint {
-  config;
+export class StylelintConfigBuilder {
+  #config;
 
   constructor() {
-    this.config = {
+    this.#config = {
       extends: [],
       rules: {},
     };
   }
 
-  get NODE_ENV() {
-    return process.env.NODE_ENV;
-  }
-
-  replaceConfig(config) {
-    this.config = { ...config };
+  #replaceConfig(config) {
+    this.#config = { ...config };
 
     return this;
   }
 
-  configStandardScss(options = {}) {
-    return this.replaceConfig({
-      ...this.config,
-      extends: [
-        ...this.config.extends,
-        'stylelint-config-standard-scss',
-      ],
-      ...options,
+  #addExtendedConfig(config) {
+    return this.#replaceConfig({
+      ...this.#config,
+      extends: this.#config.extends.includes(config) ? [...this.#config.extends] : [...this.#config.extends, config],
     });
   }
 
-  configPrettierRecommended(options = {}) {
-    return this.replaceConfig({
-      ...this.config,
-      extends: [
-        ...this.config.extends,
-        'stylelint-prettier/recommended',
-      ],
-      ...options,
-    });
+  addStandardScssConfig() {
+    return this.#addExtendedConfig('stylelint-config-standard-scss');
   }
 
-  configPrettierDisabledRule(options = {}) {
-    return this.replaceConfig({
-      ...this.config,
+  addPrettierCompatibility() {
+    return this.#replaceConfig({
+      ...this.#config,
+      extends: this.#config.extends.includes('stylelint-prettier/recommended') ? [...this.#config.extends] : [...this.#config.extends, 'stylelint-prettier/recommended'],
       rules: {
-        ...this.config.rules,
+        ...this.#config.rules,
         'prettier/prettier': null,
       },
-      ...options,
     });
   }
 
-  presetDefaults(options = {}) {
-    const {
-      configStandardScss = true,
-      configPrettierRecommended = true,
-      configPrettierDisabledRule = true,
-    } = options;
-
-    let stylelint = this;
-
-    if (configStandardScss) {
-      stylelint = stylelint.configStandardScss();
-    }
-
-    if (configPrettierRecommended) {
-      stylelint = stylelint.configPrettierRecommended();
-    }
-
-    if (configPrettierDisabledRule) {
-      stylelint = stylelint.configPrettierDisabledRule();
-    }
-
-    return stylelint;
-  }
-
-  buildConfig() {
-    return { ...this.config };
+  toConfig() {
+    return {
+      ...this.#config,
+      extends: [...this.#config.extends],
+      rules: { ...this.#config.rules },
+    };
   }
 }
