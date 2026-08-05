@@ -20,12 +20,19 @@
     "stylelint-config-standard-scss": "^17.0.0",
     "stylelint-prettier": "^5.0.3"
   },
-  "description": "@tomaschochola/tooling-stylelint",
+  "description": "Shared Stylelint configuration builder for CSS and SCSS.",
   "devDependencies": {
-    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#1.x",
-    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#1.x",
+    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#2.x",
+    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#2.x",
     "@tomaschochola/tooling-trimmer": "github:tomaschochola/tooling-trimmer#2.x"
   },
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "files": [
+    "src",
+    "templates"
+  ],
   "funding": {
     "type": "github",
     "url": "https://github.com/sponsors/tomaschochola"
@@ -36,13 +43,22 @@
     "TomasChochola",
     "Tomas Chochola",
     "Tomáš Chochola",
+    "code-quality",
+    "configuration",
+    "css",
+    "linting",
+    "scss",
+    "stylelint",
     "tooling-stylelint"
   ],
   "license": "CC-BY-ND-4.0",
   "main": "./src/index.js",
   "name": "@tomaschochola/tooling-stylelint",
-  "repository": "github:tomaschochola/tooling-stylelint",
-  "sideEffects": false,
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomaschochola/tooling-stylelint.git"
+  },
   "type": "module",
   "version": "2.0.0"
 }

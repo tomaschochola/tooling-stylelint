@@ -37,15 +37,8 @@ export class StylelintConfigBuilder {
     return this.#addExtendedConfig('stylelint-config-standard-scss');
   }
 
-  addPrettierCompatibility() {
-    return this.#replaceConfig({
-      ...this.#config,
-      extends: this.#config.extends.includes('stylelint-prettier/recommended') ? [...this.#config.extends] : [...this.#config.extends, 'stylelint-prettier/recommended'],
-      rules: {
-        ...this.#config.rules,
-        'prettier/prettier': null,
-      },
-    });
+  addPrettierFormatting() {
+    return this.#addExtendedConfig('stylelint-prettier/recommended');
   }
 
   toConfig() {
