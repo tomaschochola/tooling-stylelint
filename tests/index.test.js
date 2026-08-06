@@ -15,11 +15,12 @@ import test from 'node:test';
 import stylelint from 'stylelint';
 import { StylelintConfigBuilder } from '../src/index.js';
 
-const lint = async (builder, code, codeFilename) => stylelint.lint({
-  code,
-  codeFilename,
-  config: builder.toConfig(),
-});
+const lint = async (builder, code, codeFilename) =>
+  stylelint.lint({
+    code,
+    codeFilename,
+    config: builder.toConfig(),
+  });
 
 test('empty builder exposes explicit configuration collections', () => {
   assert.deepEqual(new StylelintConfigBuilder().toConfig(), {
@@ -29,9 +30,7 @@ test('empty builder exposes explicit configuration collections', () => {
 });
 
 test('configuration additions are idempotent and returned collections are isolated', () => {
-  const builder = new StylelintConfigBuilder()
-    .addStandardScssConfig()
-    .addStandardScssConfig();
+  const builder = new StylelintConfigBuilder().addStandardScssConfig().addStandardScssConfig();
 
   const config = builder.toConfig();
 
@@ -53,7 +52,10 @@ test('standard SCSS configuration accepts SCSS and rejects invalid CSS propertie
   const invalid = await lint(builder, '.item {\n  unknown: value;\n}\n', 'input.css');
 
   assert.equal(valid.errored, false);
-  assert.deepEqual(invalid.results[0].warnings.map(({ rule }) => rule), ['property-no-unknown']);
+  assert.deepEqual(
+    invalid.results[0].warnings.map(({ rule }) => rule),
+    ['property-no-unknown'],
+  );
 });
 
 test('copy template resolves to an executable Stylelint configuration', async () => {
