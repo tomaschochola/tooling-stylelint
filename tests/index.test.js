@@ -31,17 +31,12 @@ test('empty builder exposes explicit configuration collections', () => {
 test('configuration additions are idempotent and returned collections are isolated', () => {
   const builder = new StylelintConfigBuilder()
     .addStandardScssConfig()
-    .addStandardScssConfig()
-    .addPrettierFormatting()
-    .addPrettierFormatting();
+    .addStandardScssConfig();
 
   const config = builder.toConfig();
 
   assert.deepEqual(config, {
-    extends: [
-      'stylelint-config-standard-scss',
-      'stylelint-prettier/recommended',
-    ],
+    extends: ['stylelint-config-standard-scss'],
     rules: {},
   });
 
@@ -61,20 +56,8 @@ test('standard SCSS configuration accepts SCSS and rejects invalid CSS propertie
   assert.deepEqual(invalid.results[0].warnings.map(({ rule }) => rule), ['property-no-unknown']);
 });
 
-test('Prettier formatting reports formatting differences when enabled', async () => {
-  const result = await lint(
-    new StylelintConfigBuilder()
-      .addStandardScssConfig()
-      .addPrettierFormatting(),
-    '.item{color:red}\n',
-    'input.css',
-  );
-
-  assert.equal(result.results[0].warnings.some(({ rule }) => rule === 'prettier/prettier'), true);
-});
-
 test('copy template resolves to an executable Stylelint configuration', async () => {
-  const { default: config } = await import('../templates/base.js?test=base');
+  const { default: config } = await import('../templates/recommended.js?test=recommended');
 
   const result = await stylelint.lint({
     code: '.item {\n  color: red;\n}\n',

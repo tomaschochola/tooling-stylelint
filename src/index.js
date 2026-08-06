@@ -37,10 +37,6 @@ export class StylelintConfigBuilder {
     return this.#addExtendedConfig('stylelint-config-standard-scss');
   }
 
-  addPrettierFormatting() {
-    return this.#addExtendedConfig('stylelint-prettier/recommended');
-  }
-
   toConfig() {
     return {
       ...this.#config,

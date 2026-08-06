@@ -17,14 +17,13 @@
   ],
   "dependencies": {
     "stylelint": "^17.14.1",
-    "stylelint-config-standard-scss": "^17.0.0",
-    "stylelint-prettier": "^5.0.3"
+    "stylelint-config-standard-scss": "^17.0.0"
   },
-  "description": "Shared Stylelint configuration builder for CSS and SCSS.",
+  "description": "Shared Stylelint configuration builder for CSS and SCSS diagnostics.",
   "devDependencies": {
-    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#2.x",
-    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#2.x",
-    "@tomaschochola/tooling-trimmer": "github:tomaschochola/tooling-trimmer#2.x"
+    "@tomaschochola/tooling-eslint": "github:tomaschochola/tooling-eslint#main",
+    "@tomaschochola/tooling-prettier": "github:tomaschochola/tooling-prettier#main",
+    "@tomaschochola/tooling-trimmer": "github:tomaschochola/tooling-trimmer#main"
   },
   "exports": {
     ".": "./src/index.js"
@@ -60,5 +59,5 @@
     "url": "git+https://github.com/tomaschochola/tooling-stylelint.git"
   },
   "type": "module",
-  "version": "2.0.0"
+  "version": "0.0.0"
 }
