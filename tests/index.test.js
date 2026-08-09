@@ -59,7 +59,7 @@ test('standard SCSS configuration accepts SCSS and rejects invalid CSS propertie
 });
 
 test('copy template resolves to an executable Stylelint configuration', async () => {
-  const { default: config } = await import('../templates/recommended.js?test=recommended');
+  const { default: config } = await import('../templates/recommended.js');
 
   const result = await stylelint.lint({
     code: '.item {\n  color: red;\n}\n',
