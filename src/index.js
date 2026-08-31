@@ -11,37 +11,37 @@
  */
 
 export class StylelintConfigBuilder {
-  #config;
+    #config;
 
-  constructor() {
-    this.#config = {
-      extends: [],
-      rules: {},
-    };
-  }
+    constructor() {
+        this.#config = {
+            extends: [],
+            rules: {},
+        };
+    }
 
-  #replaceConfig(config) {
-    this.#config = { ...config };
+    #replaceConfig(config) {
+        this.#config = { ...config };
 
-    return this;
-  }
+        return this;
+    }
 
-  #addExtendedConfig(config) {
-    return this.#replaceConfig({
-      ...this.#config,
-      extends: this.#config.extends.includes(config) ? [...this.#config.extends] : [...this.#config.extends, config],
-    });
-  }
+    #addExtendedConfig(config) {
+        return this.#replaceConfig({
+            ...this.#config,
+            extends: this.#config.extends.includes(config) ? [...this.#config.extends] : [...this.#config.extends, config],
+        });
+    }
 
-  addStandardScssConfig() {
-    return this.#addExtendedConfig('stylelint-config-standard-scss');
-  }
+    addStandardScssConfig() {
+        return this.#addExtendedConfig('stylelint-config-standard-scss');
+    }
 
-  toConfig() {
-    return {
-      ...this.#config,
-      extends: [...this.#config.extends],
-      rules: { ...this.#config.rules },
-    };
-  }
+    toConfig() {
+        return {
+            ...this.#config,
+            extends: [...this.#config.extends],
+            rules: { ...this.#config.rules },
+        };
+    }
 }

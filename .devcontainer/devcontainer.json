@@ -1,22 +1,22 @@
 {
-  "appPort": ["63090:63090", "127.0.0.1:63091-63092:63091-63092", "63093:63093", "127.0.0.1:63094-63099:63094-63099"],
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
-  "customizations": {
-    "vscode": {
-      "extensions": ["EditorConfig.EditorConfig"],
-      "settings": {
-        "files.insertFinalNewline": true,
-        "files.trimFinalNewlines": true,
-        "files.trimTrailingWhitespace": true
-      }
-    }
-  },
-  "init": true,
-  "postCreateCommand": ["make", "postcreate"],
-  "remoteUser": "node",
-  "updateRemoteUserUID": true,
-  "waitFor": "postCreateCommand",
-  "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+    "appPort": ["63090:63090", "127.0.0.1:63091-63092:63091-63092", "63093:63093", "127.0.0.1:63094-63099:63094-63099"],
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": ["EditorConfig.EditorConfig"],
+            "settings": {
+                "files.insertFinalNewline": true,
+                "files.trimFinalNewlines": true,
+                "files.trimTrailingWhitespace": true
+            }
+        }
+    },
+    "init": true,
+    "postCreateCommand": ["make", "postcreate"],
+    "remoteUser": "node",
+    "updateRemoteUserUID": true,
+    "waitFor": "postCreateCommand",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }
