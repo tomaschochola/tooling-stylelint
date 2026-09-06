@@ -33,6 +33,10 @@ export class StylelintConfigBuilder {
         });
     }
 
+    addStandardConfig() {
+        return this.#addExtendedConfig('stylelint-config-standard');
+    }
+
     addStandardScssConfig() {
         return this.#addExtendedConfig('stylelint-config-standard-scss');
     }

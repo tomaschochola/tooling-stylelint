@@ -46,9 +46,47 @@ test('configuration additions are idempotent and returned collections are isolat
     assert.equal(builder.toConfig().rules['external-rule'], undefined);
 });
 
+test('standard configuration additions are idempotent and returned collections are isolated', () => {
+    const builder = new StylelintConfigBuilder().addStandardConfig().addStandardConfig();
+
+    const config = builder.toConfig();
+
+    assert.deepEqual(config, {
+        extends: ['stylelint-config-standard'],
+        rules: {},
+    });
+
+    config.extends.push('external-mutation');
+    config.rules['external-rule'] = true;
+
+    assert.equal(builder.toConfig().extends.includes('external-mutation'), false);
+    assert.equal(builder.toConfig().rules['external-rule'], undefined);
+});
+
+test('standard and SCSS configurations can be combined without duplication', () => {
+    const config = new StylelintConfigBuilder().addStandardConfig().addStandardScssConfig().addStandardConfig().toConfig();
+
+    assert.deepEqual(config, {
+        extends: ['stylelint-config-standard', 'stylelint-config-standard-scss'],
+        rules: {},
+    });
+});
+
 test('standard SCSS configuration accepts SCSS and rejects invalid CSS properties', async () => {
     const builder = new StylelintConfigBuilder().addStandardScssConfig();
     const valid = await lint(builder, '$color: red;\n\n.item {\n  color: $color;\n}\n', 'input.scss');
+    const invalid = await lint(builder, '.item {\n  unknown: value;\n}\n', 'input.css');
+
+    assert.equal(valid.errored, false);
+    assert.deepEqual(
+        invalid.results[0].warnings.map(({ rule }) => rule),
+        ['property-no-unknown'],
+    );
+});
+
+test('standard configuration accepts CSS and rejects invalid CSS properties', async () => {
+    const builder = new StylelintConfigBuilder().addStandardConfig();
+    const valid = await lint(builder, '.item {\n  color: red;\n}\n', 'input.css');
     const invalid = await lint(builder, '.item {\n  unknown: value;\n}\n', 'input.css');
 
     assert.equal(valid.errored, false);
@@ -69,4 +107,17 @@ test('copy template resolves to an executable Stylelint configuration', async ()
 
     assert.equal(result.errored, false);
     assert.deepEqual(config.extends, ['stylelint-config-standard-scss']);
+});
+
+test('standard template resolves to an executable Stylelint configuration', async () => {
+    const { default: config } = await import('../templates/standard.js');
+
+    const result = await stylelint.lint({
+        code: '.item {\n  color: red;\n}\n',
+        codeFilename: 'input.css',
+        config,
+    });
+
+    assert.equal(result.errored, false);
+    assert.deepEqual(config.extends, ['stylelint-config-standard']);
 });
