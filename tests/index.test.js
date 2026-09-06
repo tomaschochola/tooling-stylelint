@@ -96,21 +96,32 @@ test('standard configuration accepts CSS and rejects invalid CSS properties', as
     );
 });
 
-test('copy template resolves to an executable Stylelint configuration', async () => {
-    const { default: config } = await import('../templates/recommended.js');
+test('recommended configuration accepts CSS and rejects invalid CSS properties', async () => {
+    const builder = new StylelintConfigBuilder().addRecommendedConfig();
+    const valid = await lint(builder, '.item {\n  color: red;\n}\n', 'input.css');
+    const invalid = await lint(builder, '.item {\n  unknown: value;\n}\n', 'input.css');
 
-    const result = await stylelint.lint({
-        code: '.item {\n  color: red;\n}\n',
-        codeFilename: 'input.scss',
-        config,
-    });
-
-    assert.equal(result.errored, false);
-    assert.deepEqual(config.extends, ['stylelint-config-standard-scss']);
+    assert.equal(valid.errored, false);
+    assert.deepEqual(
+        invalid.results[0].warnings.map(({ rule }) => rule),
+        ['property-no-unknown'],
+    );
 });
 
-test('standard template resolves to an executable Stylelint configuration', async () => {
-    const { default: config } = await import('../templates/standard.js');
+test('recommended SCSS configuration accepts SCSS and rejects invalid CSS properties', async () => {
+    const builder = new StylelintConfigBuilder().addRecommendedScssConfig();
+    const valid = await lint(builder, '$color: red;\n\n.item {\n  color: $color;\n}\n', 'input.scss');
+    const invalid = await lint(builder, '.item {\n  unknown: value;\n}\n', 'input.css');
+
+    assert.equal(valid.errored, false);
+    assert.deepEqual(
+        invalid.results[0].warnings.map(({ rule }) => rule),
+        ['property-no-unknown'],
+    );
+});
+
+test('css template resolves to an executable Stylelint configuration', async () => {
+    const { default: config } = await import('../templates/css.js');
 
     const result = await stylelint.lint({
         code: '.item {\n  color: red;\n}\n',
@@ -119,5 +130,18 @@ test('standard template resolves to an executable Stylelint configuration', asyn
     });
 
     assert.equal(result.errored, false);
-    assert.deepEqual(config.extends, ['stylelint-config-standard']);
+    assert.deepEqual(config.extends, ['stylelint-config-recommended']);
+});
+
+test('scss template resolves to an executable Stylelint configuration', async () => {
+    const { default: config } = await import('../templates/scss.js');
+
+    const result = await stylelint.lint({
+        code: '$color: red;\n\n.item {\n  color: $color;\n}\n',
+        codeFilename: 'input.scss',
+        config,
+    });
+
+    assert.equal(result.errored, false);
+    assert.deepEqual(config.extends, ['stylelint-config-recommended-scss']);
 });

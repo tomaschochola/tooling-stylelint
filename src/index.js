@@ -33,8 +33,16 @@ export class StylelintConfigBuilder {
         });
     }
 
+    addRecommendedConfig() {
+        return this.#addExtendedConfig('stylelint-config-recommended');
+    }
+
     addStandardConfig() {
         return this.#addExtendedConfig('stylelint-config-standard');
+    }
+
+    addRecommendedScssConfig() {
+        return this.#addExtendedConfig('stylelint-config-recommended-scss');
     }
 
     addStandardScssConfig() {
