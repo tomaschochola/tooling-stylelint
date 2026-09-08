@@ -22,53 +22,73 @@ const lint = async (builder, code, codeFilename) =>
         config: builder.toConfig(),
     });
 
+const reportConfiguration = {
+    reportInvalidScopeDisables: true,
+    reportNeedlessDisables: true,
+    reportUnscopedDisables: true,
+};
+
 test('empty builder exposes explicit configuration collections', () => {
     assert.deepEqual(new StylelintConfigBuilder().toConfig(), {
         extends: [],
-        rules: {},
+        overrides: [],
+        ...reportConfiguration,
     });
 });
 
-test('configuration additions are idempotent and returned collections are isolated', () => {
-    const builder = new StylelintConfigBuilder().addStandardScssConfig().addStandardScssConfig();
+test('SCSS profiles are scoped, idempotent, and isolated from caller mutation', () => {
+    const builder = new StylelintConfigBuilder().addRecommendedScssConfig().addRecommendedScssConfig();
 
     const config = builder.toConfig();
 
     assert.deepEqual(config, {
-        extends: ['stylelint-config-standard-scss'],
-        rules: {},
+        extends: ['stylelint-config-recommended'],
+        overrides: [
+            {
+                extends: ['stylelint-config-recommended-scss'],
+                files: ['**/*.scss'],
+            },
+        ],
+        ...reportConfiguration,
     });
 
     config.extends.push('external-mutation');
-    config.rules['external-rule'] = true;
+    config.overrides[0].extends.push('external-mutation');
+    config.overrides[0].files.push('**/*.sass');
 
     assert.equal(builder.toConfig().extends.includes('external-mutation'), false);
-    assert.equal(builder.toConfig().rules['external-rule'], undefined);
+    assert.equal(builder.toConfig().overrides[0].extends.includes('external-mutation'), false);
+    assert.equal(builder.toConfig().overrides[0].files.includes('**/*.sass'), false);
 });
 
-test('standard configuration additions are idempotent and returned collections are isolated', () => {
+test('CSS configuration additions are idempotent and returned collections are isolated', () => {
     const builder = new StylelintConfigBuilder().addStandardConfig().addStandardConfig();
 
     const config = builder.toConfig();
 
     assert.deepEqual(config, {
         extends: ['stylelint-config-standard'],
-        rules: {},
+        overrides: [],
+        ...reportConfiguration,
     });
 
     config.extends.push('external-mutation');
-    config.rules['external-rule'] = true;
 
     assert.equal(builder.toConfig().extends.includes('external-mutation'), false);
-    assert.equal(builder.toConfig().rules['external-rule'], undefined);
 });
 
-test('standard and SCSS configurations can be combined without duplication', () => {
+test('standard SCSS profile includes one global CSS base and one scoped override', () => {
     const config = new StylelintConfigBuilder().addStandardConfig().addStandardScssConfig().addStandardConfig().toConfig();
 
     assert.deepEqual(config, {
-        extends: ['stylelint-config-standard', 'stylelint-config-standard-scss'],
-        rules: {},
+        extends: ['stylelint-config-standard'],
+        overrides: [
+            {
+                extends: ['stylelint-config-standard-scss'],
+                files: ['**/*.scss'],
+            },
+        ],
+        ...reportConfiguration,
     });
 });
 
@@ -120,6 +140,49 @@ test('recommended SCSS configuration accepts SCSS and rejects invalid CSS proper
     );
 });
 
+test('mixed profile parses CSS as CSS and SCSS as SCSS', async () => {
+    const builder = new StylelintConfigBuilder().addRecommendedScssConfig();
+    const css = await lint(builder, '.item { // invalid CSS\n  color: red;\n}\n', 'input.css');
+    const scss = await lint(builder, '.item { // valid SCSS\n  color: red;\n}\n', 'input.scss');
+
+    assert.equal(css.errored, true);
+    assert.deepEqual(
+        css.results[0].warnings.map(({ rule }) => rule),
+        ['CssSyntaxError'],
+    );
+    assert.equal(scss.errored, false);
+});
+
+test('recommended CSS profile accepts portable modern syntax', async () => {
+    const result = await lint(
+        new StylelintConfigBuilder().addRecommendedConfig(),
+        '@layer components {\n  .item {\n    color: oklch(from red l c h);\n\n    &:hover {\n      color: light-dark(black, white);\n    }\n  }\n}\n',
+        'input.css',
+    );
+
+    assert.equal(result.errored, false);
+});
+
+test('configuration comments must be scoped, valid, and necessary', async () => {
+    const builder = new StylelintConfigBuilder().addRecommendedConfig();
+    const invalidScope = await lint(builder, '/* stylelint-disable unknown-rule */\n.item { color: red; }\n', 'input.css');
+    const needless = await lint(builder, '/* stylelint-disable property-no-unknown */\n.item { color: red; }\n', 'input.css');
+    const unscoped = await lint(builder, '/* stylelint-disable */\n.item { color: red; }\n', 'input.css');
+
+    assert.deepEqual(
+        invalidScope.results[0].warnings.map(({ rule }) => rule),
+        ['--report-needless-disables', '--report-invalid-scope-disables'],
+    );
+    assert.deepEqual(
+        needless.results[0].warnings.map(({ rule }) => rule),
+        ['--report-needless-disables'],
+    );
+    assert.deepEqual(
+        unscoped.results[0].warnings.map(({ rule }) => rule),
+        ['--report-needless-disables', '--report-unscoped-disables'],
+    );
+});
+
 test('css template resolves to an executable Stylelint configuration', async () => {
     const { default: config } = await import('../templates/css.js');
 
@@ -131,6 +194,7 @@ test('css template resolves to an executable Stylelint configuration', async () 
 
     assert.equal(result.errored, false);
     assert.deepEqual(config.extends, ['stylelint-config-recommended']);
+    assert.deepEqual(config.overrides, []);
 });
 
 test('scss template resolves to an executable Stylelint configuration', async () => {
@@ -143,5 +207,11 @@ test('scss template resolves to an executable Stylelint configuration', async ()
     });
 
     assert.equal(result.errored, false);
-    assert.deepEqual(config.extends, ['stylelint-config-recommended-scss']);
+    assert.deepEqual(config.extends, ['stylelint-config-recommended']);
+    assert.deepEqual(config.overrides, [
+        {
+            extends: ['stylelint-config-recommended-scss'],
+            files: ['**/*.scss'],
+        },
+    ]);
 });

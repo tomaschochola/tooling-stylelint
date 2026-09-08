@@ -10,13 +10,22 @@
  * @see {@link https://github.com/sponsors/tomaschochola} GitHub Sponsors
  */
 
+const recommendedConfig = 'stylelint-config-recommended';
+const recommendedScssConfig = 'stylelint-config-recommended-scss';
+const scssFiles = Object.freeze(['**/*.scss']);
+const standardConfig = 'stylelint-config-standard';
+const standardScssConfig = 'stylelint-config-standard-scss';
+
 export class StylelintConfigBuilder {
     #config;
 
     constructor() {
         this.#config = {
             extends: [],
-            rules: {},
+            overrides: [],
+            reportInvalidScopeDisables: true,
+            reportNeedlessDisables: true,
+            reportUnscopedDisables: true,
         };
     }
 
@@ -27,33 +36,66 @@ export class StylelintConfigBuilder {
     }
 
     #addExtendedConfig(config) {
+        const extendedConfigs = [...this.#config.extends];
+
+        if (!extendedConfigs.includes(config)) {
+            extendedConfigs.push(config);
+        }
+
         return this.#replaceConfig({
             ...this.#config,
-            extends: this.#config.extends.includes(config) ? [...this.#config.extends] : [...this.#config.extends, config],
+            extends: extendedConfigs,
+        });
+    }
+
+    #addScssConfig(cssConfig, scssConfig) {
+        this.#addExtendedConfig(cssConfig);
+
+        const overrides = this.#config.overrides.map((override) => ({
+            ...override,
+            extends: [...override.extends],
+            files: [...override.files],
+        }));
+        const existingOverride = overrides.find((override) => override.extends.includes(scssConfig));
+
+        if (existingOverride === undefined) {
+            overrides.push({
+                extends: [scssConfig],
+                files: [...scssFiles],
+            });
+        }
+
+        return this.#replaceConfig({
+            ...this.#config,
+            overrides,
         });
     }
 
     addRecommendedConfig() {
-        return this.#addExtendedConfig('stylelint-config-recommended');
+        return this.#addExtendedConfig(recommendedConfig);
     }
 
     addStandardConfig() {
-        return this.#addExtendedConfig('stylelint-config-standard');
+        return this.#addExtendedConfig(standardConfig);
     }
 
     addRecommendedScssConfig() {
-        return this.#addExtendedConfig('stylelint-config-recommended-scss');
+        return this.#addScssConfig(recommendedConfig, recommendedScssConfig);
     }
 
     addStandardScssConfig() {
-        return this.#addExtendedConfig('stylelint-config-standard-scss');
+        return this.#addScssConfig(standardConfig, standardScssConfig);
     }
 
     toConfig() {
         return {
             ...this.#config,
             extends: [...this.#config.extends],
-            rules: { ...this.#config.rules },
+            overrides: this.#config.overrides.map((override) => ({
+                ...override,
+                extends: [...override.extends],
+                files: [...override.files],
+            })),
         };
     }
 }
