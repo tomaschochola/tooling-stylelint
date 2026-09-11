@@ -183,8 +183,8 @@ test('configuration comments must be scoped, valid, and necessary', async () => 
     );
 });
 
-test('css template resolves to an executable Stylelint configuration', async () => {
-    const { default: config } = await import('../templates/css.js');
+test('css scaffold resolves to an executable Stylelint configuration', async () => {
+    const { default: config } = await import('../scaffolds/css.js');
 
     const result = await stylelint.lint({
         code: '.item {\n  color: red;\n}\n',
@@ -197,8 +197,8 @@ test('css template resolves to an executable Stylelint configuration', async () 
     assert.deepEqual(config.overrides, []);
 });
 
-test('scss template resolves to an executable Stylelint configuration', async () => {
-    const { default: config } = await import('../templates/scss.js');
+test('scss scaffold resolves to an executable Stylelint configuration', async () => {
+    const { default: config } = await import('../scaffolds/scss.js');
 
     const result = await stylelint.lint({
         code: '$color: red;\n\n.item {\n  color: $color;\n}\n',

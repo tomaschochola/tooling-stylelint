@@ -33,7 +33,7 @@
     },
     "files": [
         "src",
-        "templates"
+        "scaffolds"
     ],
     "funding": {
         "type": "github",
