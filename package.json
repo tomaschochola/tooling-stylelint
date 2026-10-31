@@ -47,7 +47,7 @@
         "Tomáš Chochola",
         "tooling-stylelint"
     ],
-    "license": "CC-BY-ND-4.0",
+    "license": "BSD-3-Clause",
     "main": "./src/index.js",
     "name": "@tomaschochola/tooling-stylelint",
     "private": true,
